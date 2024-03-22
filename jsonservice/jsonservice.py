@@ -2,13 +2,13 @@ import os
 import json
 
 
-class JsonService():
+class JsonService:
     def __init__(self, json_path: str, create_if_not_exists: bool = True, default_data: dict = {}):
         if not os.path.exists(json_path) and not create_if_not_exists:
             print(f"The given json file does not exists! ({json_path})")
             exit(1)
 
-        if default_data != {} or default_data != []:
+        if default_data != {} and default_data != []:
             print("Default data can only be an empty dictionary or list!")
             exit(1)
 
@@ -25,14 +25,6 @@ class JsonService():
             return self.read_subkey(key.split('.'), self._data)
         else:
             return self.read_subkey([key], self._data)
-
-    def has_key(self, key: str) -> bool:
-        if '.' in key:
-            res = self.read_subkey(key.split('.'), self._data)
-        else:
-            res = self.read_subkey([key], self._data)
-
-        return res is not None
 
     def read_subkey(self, keys: list[str], source: dict):
         if len(keys) == 0 or type(source) is not dict:
