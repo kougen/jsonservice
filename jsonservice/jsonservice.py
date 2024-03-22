@@ -3,10 +3,19 @@ import json
 
 
 class JsonService():
-    def __init__(self, json_path: str) -> None:
-        if not os.path.exists(json_path):
+    def __init__(self, json_path: str, create_if_not_exists: bool = True, default_data: dict = {}):
+        if not os.path.exists(json_path) and not create_if_not_exists:
             print(f"The given json file does not exists! ({json_path})")
             exit(1)
+
+        if default_data != {} or default_data != []:
+            print("Default data can only be an empty dictionary or list!")
+            exit(1)
+
+        if not os.path.exists(json_path):
+            with open(json_path, 'w') as outfile:
+                json.dump(default_data, outfile)
+
         self._json_path = json_path
         json_data = open(self._json_path, 'r').read()
         self._data = json.loads(json_data)  # type:dict
