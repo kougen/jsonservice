@@ -3,7 +3,7 @@ import json
 
 
 class JsonService:
-    def __init__(self, json_path: str, create_if_not_exists: bool = True, default_data: dict = {}):
+    def __init__(self, json_path: str, create_if_not_exists: bool = True, default_data: dict | list = {}):
         if not os.path.exists(json_path) and not create_if_not_exists:
             print(f"The given json file does not exists! ({json_path})")
             exit(1)
