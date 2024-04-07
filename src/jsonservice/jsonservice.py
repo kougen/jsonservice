@@ -3,7 +3,10 @@ import json
 
 
 class JsonService:
-    def __init__(self, json_path: str, create_if_not_exists: bool = True, default_data: dict | list = {}):
+    def __init__(self, json_path: str, create_if_not_exists: bool = True, default_data: dict | list | None = None):
+        if default_data is None:
+            default_data = {}
+
         if not os.path.exists(json_path) and not create_if_not_exists:
             print(f"The given json file does not exists! ({json_path})")
             exit(1)
@@ -18,15 +21,24 @@ class JsonService:
 
         self._json_path = json_path
         json_data = open(self._json_path, 'r').read()
-        self._data = json.loads(json_data)  # type:dict
+        self._data = json.loads(json_data)  # type:dict | list
 
-    def read(self, key: str):
+    def read(self, key: str) -> dict | list | None:
         if '.' in key:
-            return self.read_subkey(key.split('.'), self._data)
+            return self._read_subkey(key.split('.'), self._data)
         else:
-            return self.read_subkey([key], self._data)
+            return self._read_subkey([key], self._data)
 
-    def read_subkey(self, keys: list[str], source: dict):
+    def read_all(self) -> dict | list:
+        return self._data
+
+    def read_index(self, index: int) -> dict | list | None:
+        if type(self._data) is list:
+            if index < len(self._data):
+                return self._data[index]
+        return None
+
+    def _read_subkey(self, keys: list[str], source: dict):
         if len(keys) == 0 or type(source) is not dict:
             return None
 
@@ -38,7 +50,7 @@ class JsonService:
                 return None
 
         if keys[0] in source.keys():
-            return self.read_subkey(keys[1:], source[keys[0]])
+            return self._read_subkey(keys[1:], source[keys[0]])
 
         return None            
 
